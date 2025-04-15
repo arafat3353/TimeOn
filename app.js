@@ -1,63 +1,75 @@
-window.onload = () => {
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// DOM elements
+const phoneInput = document.getElementById('phone');
+const otpInput = document.getElementById('otp');
+const messageInput = document.getElementById('message');
+const messagesDiv = document.getElementById('messages');
+
+// Send OTP
+function sendOTP() {
+  const phoneNumber = phoneInput.value;
+  const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    size: 'invisible',
+  });
+  auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+    .then((confirmationResult) => {
+      window.confirmationResult = confirmationResult;
+      alert('OTP sent!');
+    })
+    .catch((error) => {
+      console.error("Error during OTP send:", error);
+    });
+}
+
+// Verify OTP
+function verifyOTP() {
+  const code = otpInput.value;
+  confirmationResult.confirm(code)
+    .then((result) => {
+      const user = result.user;
+      alert("Login successful!");
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('chat').style.display = 'block';
+    })
+    .catch((error) => {
+      console.error("Error during OTP verification:", error);
+    });
+}
+
+// Send Message
+function sendMessage() {
+  const message = messageInput.value;
+  if (message.trim()) {
+    db.collection('chats').add({
+      text: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      user: auth.currentUser.phoneNumber,
+    }).then(() => {
+      messageInput.value = '';
+    }).catch((error) => {
+      console.error("Error sending message:", error);
+    });
+  }
+}
+
+// Logout
+function logout() {
+  auth.signOut().then(() => {
     document.getElementById('login').style.display = 'block';
-  };
-  
-  function sendOTP() {
-    const phoneNumber = document.getElementById('phone').value;
-    const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
-    auth.signInWithPhoneNumber(phoneNumber, appVerifier)
-      .then(confirmationResult => {
-        window.confirmationResult = confirmationResult;
-        alert("OTP sent!");
-      })
-      .catch(error => {
-        alert("Error: " + error.message);
-      });
-  }
-  
-  function verifyOTP() {
-    const otp = document.getElementById('otp').value;
-    window.confirmationResult.confirm(otp)
-      .then(result => {
-        alert("Login successful!");
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('chat').style.display = 'block';
-        listenMessages();
-      })
-      .catch(error => {
-        alert("Incorrect OTP");
-      });
-  }
-  
-  function sendMessage() {
-    const msg = document.getElementById('message').value;
-    if (!msg.trim()) return;
-    db.collection("messages").add({
-      text: msg,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    document.getElementById('message').value = "";
-  }
-  
-  function listenMessages() {
-    db.collection("messages").orderBy("createdAt").onSnapshot(snapshot => {
-      const msgBox = document.getElementById('messages');
-      msgBox.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.className = 'msg';
-        div.innerText = data.text || '';
-        msgBox.appendChild(div);
-      });
-    });
-  }
-  
-  function logout() {
-    auth.signOut().then(() => {
-      alert("Logged out");
-      document.getElementById('chat').style.display = 'none';
-      document.getElementById('login').style.display = 'block';
-    });
-  }
-  
+    document.getElementById('chat').style.display = 'none';
+  });
+}
+
+// Auto-delete messages after 1 hour
+db.collection('chats').onSnapshot(snapshot => {
+  snapshot.forEach(doc => {
+    const chatData = doc.data();
+    const chatTime = chatData.timestamp.toMillis();
+    const currentTime = Date.now();
+    if (currentTime - chatTime > 3600000) {
+      db.collection('chats').doc(doc.id).delete();
+    }
+  });
+});

@@ -1,87 +1,9 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Time On</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #3498db, #8e44ad);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-  
-    h1 {
-      font-size: 3em;
-      margin-top: 50px;
-      color: #fff;
-    }
-  
-    #login, #chat {
-      display: none;
-      margin-top: 50px;
-      padding: 30px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      width: 350px;
-      margin: auto;
-    }
-  
-    #login input, #chat input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-    }
-  
-    #messages {
-      height: 250px;
-      overflow-y: scroll;
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-  
-    .msg {
-      margin: 5px 0;
-      padding: 5px;
-      background: #ecf0f1;
-      border-radius: 5px;
-      max-width: 80%;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-    }
-  
-    button {
-      padding: 10px 20px;
-      margin: 5px 0;
-      background: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  
-    button:hover {
-      background: #27ae60;
-    }
-  
-    .logout-btn {
-      background: #e74c3c;
-    }
-  
-    .logout-btn:hover {
-      background: #c0392b;
-    }
-  </style>
-  
   <style>
     body {
       font-family: sans-serif;
@@ -90,32 +12,24 @@
       padding: 20px;
     }
     #login, #chat { display: none; }
-    #messages {
-      height: 300px;
-      overflow-y: scroll;
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    .msg {
-      margin: 5px 0;
-      padding: 5px;
-      background: #e0e0e0;
-      border-radius: 5px;
-    }
+    #messages { height: 300px; overflow-y: scroll; background: #fff; padding: 10px; border-radius: 10px; }
+    .msg { margin: 5px 0; padding: 5px; background: #e0e0e0; border-radius: 5px; }
   </style>
 </head>
 <body>
   <h1>⏳ Time On</h1>
+
+  <!-- Login Section -->
   <div id="login">
     <h3>Login with Phone</h3>
-    <input type="text" id="phone" placeholder="+8801XXXXXXXXX">
+    <input type="text" id="phone" placeholder="+8801833537479">
     <div id="recaptcha-container"></div>
     <button onclick="sendOTP()">Send OTP</button><br><br>
     <input type="text" id="otp" placeholder="Enter OTP">
     <button onclick="verifyOTP()">Verify OTP</button>
   </div>
 
+  <!-- Chat Section -->
   <div id="chat">
     <h3>Chat</h3>
     <div id="messages"></div>
@@ -124,10 +38,15 @@
     <button onclick="logout()">Logout</button>
   </div>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+
+  <!-- Firebase Config (make sure it's in the same folder) -->
   <script src="firebaseConfig.js"></script>
+  
+  <!-- App Logic (make sure it's in the same folder) -->
   <script src="app.js"></script>
 </body>
 </html>
